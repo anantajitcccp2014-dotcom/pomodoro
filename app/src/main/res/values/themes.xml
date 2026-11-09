@@ -1,8 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Светлая схема: светло-синий + бирюзовый -->
     <style name="Theme.Pomo" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/tomato</item>
-        <item name="colorOnPrimary">@android:color/white</item>
-        <item name="colorSecondary">@color/leaf</item>
+        <item name="colorPrimary">#1A88B0</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#C4E9F7</item>
+        <item name="colorOnPrimaryContainer">#00354A</item>
+        <item name="colorPrimaryInverse">#7DD0EE</item>
+
+        <item name="colorSecondary">#169A8E</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorSecondaryContainer">#CDEFF4</item>
+        <item name="colorOnSecondaryContainer">#003A40</item>
+
+        <item name="colorTertiary">#3F7FBF</item>
+        <item name="colorOnTertiary">#FFFFFF</item>
+        <item name="colorTertiaryContainer">#D6E6FA</item>
+        <item name="colorOnTertiaryContainer">#0E2F52</item>
+
+        <item name="android:colorBackground">#F4FAFC</item>
+        <item name="colorOnBackground">#151C1F</item>
+        <item name="colorSurface">#F4FAFC</item>
+        <item name="colorOnSurface">#151C1F</item>
+        <item name="colorSurfaceVariant">#DAE7ED</item>
+        <item name="colorOnSurfaceVariant">#3E4A50</item>
+        <item name="colorSurfaceInverse">#2A3134</item>
+        <item name="colorOnSurfaceInverse">#EBF2F5</item>
+        <item name="colorSurfaceContainerLowest">#FFFFFF</item>
+        <item name="colorSurfaceContainerLow">#EBF5F9</item>
+        <item name="colorSurfaceContainer">#E5F1F6</item>
+        <item name="colorSurfaceContainerHigh">#DFECF2</item>
+        <item name="colorSurfaceContainerHighest">#D8E7EE</item>
+        <item name="colorSurfaceDim">#D2E0E6</item>
+        <item name="colorSurfaceBright">#F4FAFC</item>
+        <item name="colorOutline">#6E7B81</item>
+        <item name="colorOutlineVariant">#BCCAD0</item>
+
+        <item name="android:statusBarColor">#F4FAFC</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">#F4FAFC</item>
     </style>
 </resources>

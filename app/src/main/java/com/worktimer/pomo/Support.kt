@@ -28,10 +28,14 @@ object Config {
     fun shortBreak(c: Context) = p(c).getInt("short", 5)
     fun longBreak(c: Context) = p(c).getInt("long", 15)
     fun cycles(c: Context) = p(c).getInt("cycles", 4).coerceAtLeast(1)
-    fun autoBreak(c: Context) = p(c).getBoolean("autoBreak", true)
+    fun autoBreak(c: Context) = p(c).getBoolean("autoBreak2", false)
     fun autoWork(c: Context) = p(c).getBoolean("autoWork", false)
     fun keepScreen(c: Context) = p(c).getBoolean("keepScreen", true)
     fun alarmVolume(c: Context) = p(c).getBoolean("alarmVolume", true)
+    /** Дневная цель в минутах (0 — без цели). */
+    fun dailyGoalMin(c: Context) = p(c).getInt("dailyGoal", 240)
+    /** Большая цель в часах (0 — без цели). */
+    fun bigGoalHours(c: Context) = p(c).getInt("bigGoal", 1000)
 
     /** key: "work" — звук конца работы, "break" — звук конца перерыва. */
     fun sound(c: Context, key: String): String =
@@ -58,13 +62,16 @@ object Config {
     fun save(
         c: Context, work: Int, short: Int, long: Int, cycles: Int,
         autoBreak: Boolean, autoWork: Boolean, keepScreen: Boolean, alarmVolume: Boolean,
+        dailyGoalMin: Int, bigGoalHours: Int,
     ) {
         p(c).edit()
             .putInt("work", work)
             .putInt("short", short)
             .putInt("long", long)
             .putInt("cycles", cycles)
-            .putBoolean("autoBreak", autoBreak)
+            .putBoolean("autoBreak2", autoBreak)
+            .putInt("dailyGoal", dailyGoalMin)
+            .putInt("bigGoal", bigGoalHours)
             .putBoolean("autoWork", autoWork)
             .putBoolean("keepScreen", keepScreen)
             .putBoolean("alarmVolume", alarmVolume)
@@ -72,9 +79,15 @@ object Config {
     }
 }
 
-/** Учёт рабочего времени по дням. */
+/**
+ * Учёт рабочего времени по дням и проектам.
+ * Ключи: "w_<дата>" — основной проект, "w_<дата>|<id>" — другие (так же "p_" для помидоров).
+ */
 object Stats {
     private fun p(c: Context) = c.getSharedPreferences("stats", Context.MODE_PRIVATE)
+
+    private fun key(prefix: String, day: LocalDate, project: String) =
+        if (project == Projects.MAIN) "${prefix}_$day" else "${prefix}_$day|$project"
 
     /** Разбивает отрезок времени по календарным дням (если он переходит через полночь). */
     fun split(from: Long, to: Long): Map<LocalDate, Long> {
@@ -92,27 +105,58 @@ object Stats {
         return out
     }
 
-    fun addWork(c: Context, from: Long, to: Long) {
+    fun addWork(c: Context, from: Long, to: Long, project: String) {
         val parts = split(from, to)
         if (parts.isEmpty()) return
         val prefs = p(c)
         val e = prefs.edit()
         for ((day, ms) in parts) {
-            val key = "w_$day"
-            e.putLong(key, prefs.getLong(key, 0L) + ms)
+            val k = key("w", day, project)
+            e.putLong(k, prefs.getLong(k, 0L) + ms)
         }
         e.commit()
     }
 
-    fun addPomodoro(c: Context, at: Long) {
+    fun addPomodoro(c: Context, at: Long, project: String) {
         val day = Instant.ofEpochMilli(at).atZone(ZoneId.systemDefault()).toLocalDate()
-        val key = "p_$day"
+        val k = key("p", day, project)
         val prefs = p(c)
-        prefs.edit().putInt(key, prefs.getInt(key, 0) + 1).commit()
+        prefs.edit().putInt(k, prefs.getInt(k, 0) + 1).commit()
     }
 
-    fun workMs(c: Context, day: LocalDate): Long = p(c).getLong("w_$day", 0L)
-    fun pomodoros(c: Context, day: LocalDate): Int = p(c).getInt("p_$day", 0)
+    /** Все записи: день -> (проект -> значение). */
+    private fun <T> loadAll(c: Context, prefix: String, read: (Any?) -> T?): MutableMap<LocalDate, MutableMap<String, T>> {
+        val out = mutableMapOf<LocalDate, MutableMap<String, T>>()
+        for ((k, v) in p(c).all) {
+            if (!k.startsWith(prefix + "_")) continue
+            val rest = k.substring(prefix.length + 1)
+            val bar = rest.indexOf('|')
+            val dayStr = if (bar >= 0) rest.substring(0, bar) else rest
+            val project = if (bar >= 0) rest.substring(bar + 1) else Projects.MAIN
+            val day = runCatching { LocalDate.parse(dayStr) }.getOrNull() ?: continue
+            val value = read(v) ?: continue
+            out.getOrPut(day) { mutableMapOf() }[project] = value
+        }
+        return out
+    }
+
+    fun loadWork(c: Context): MutableMap<LocalDate, MutableMap<String, Long>> =
+        loadAll(c, "w") { (it as? Number)?.toLong() }
+
+    fun loadPomodoros(c: Context): MutableMap<LocalDate, MutableMap<String, Int>> =
+        loadAll(c, "p") { (it as? Number)?.toInt() }
+
+    /** Рабочее время вместе с идущим прямо сейчас отрезком. */
+    fun loadWorkLive(c: Context): MutableMap<LocalDate, MutableMap<String, Long>> {
+        val data = loadWork(c)
+        val seg = Engine.liveSegment(Engine.load(c), System.currentTimeMillis()) ?: return data
+        val project = Projects.currentId(c)
+        for ((day, ms) in split(seg.first, seg.second)) {
+            val m = data.getOrPut(day) { mutableMapOf() }
+            m[project] = (m[project] ?: 0L) + ms
+        }
+        return data
+    }
 }
 
 /** Будильник, который срабатывает в конце фазы даже при выключенном экране. */
@@ -209,6 +253,23 @@ object Fmt {
             h > 0 -> "$h ч $m мин"
             else -> "$m мин"
         }
+    }
+
+    /** Подпись оси графика. */
+    fun axis(ms: Long): String {
+        val min = ms / 60_000L
+        return when {
+            min == 0L -> "0"
+            min % 60 == 0L -> "${min / 60} ч"
+            min >= 60 -> String.format(Locale.ROOT, "%.1f ч", min / 60.0).replace('.', ',')
+            else -> "$min мин"
+        }
+    }
+
+    fun hours(ms: Long): String {
+        val h = ms / 3_600_000.0
+        return if (h >= 10 || h == Math.floor(h)) "${h.toLong()}"
+        else String.format(Locale.ROOT, "%.1f", h).replace('.', ',')
     }
 
     private val clockFmt = DateTimeFormatter.ofPattern("HH:mm")

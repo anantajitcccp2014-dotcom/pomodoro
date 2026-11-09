@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="work">#7DD0EE</color>
+    <color name="rest">#6FD6C8</color>
+    <color name="on_phase">#00303D</color>
+    <color name="chart_text">#A9B4B9</color>
+    <color name="chart_grid">#30393D</color>
+</resources>

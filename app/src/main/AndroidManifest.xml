@@ -31,6 +31,10 @@
             android:name=".SettingsActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".StatsActivity"
+            android:exported="false" />
+
         <receiver
             android:name=".AlarmReceiver"
             android:exported="false" />

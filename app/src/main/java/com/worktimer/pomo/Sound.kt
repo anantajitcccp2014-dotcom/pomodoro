@@ -19,6 +19,7 @@ object Sound {
 
     val BUILTIN = listOf(
         Builtin("bowl", "Поющая чаша", R.raw.bowl),
+        Builtin("birds", "Птички", R.raw.birds),
         Builtin("bell", "Колокольчик", R.raw.bell),
         Builtin("chime", "Двойной звон", R.raw.chime),
         Builtin("trill", "Трель", R.raw.trill),

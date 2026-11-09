@@ -65,28 +65,53 @@ object Notif {
         }
         if (!canNotify(ctx)) return
 
+        val title = when {
+            s.overtime && s.phase == Phase.WORK -> "Работа · доработка"
+            s.overtime -> "Перерыв затянулся"
+            else -> Fmt.phaseName(s.phase)
+        } + " · " + Projects.current(ctx).name
+
         val b = NotificationCompat.Builder(ctx, CH_TIMER)
             .setSmallIcon(R.drawable.ic_stat_timer)
-            .setContentTitle(Fmt.phaseName(s.phase))
+            .setContentTitle(title)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setSilent(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setContentIntent(openPi(ctx))
 
-        if (s.running) {
-            b.setUsesChronometer(true)
-                .setChronometerCountDown(true)
-                .setWhen(s.endAt)
-                .setShowWhen(true)
-                .setContentText("до " + Fmt.clock(s.endAt))
-                .addAction(0, "Пауза", actionPi(ctx, ActionReceiver.ACTION_PAUSE, 1))
-        } else {
-            b.setShowWhen(false)
-                .setContentText("Пауза · осталось " + Fmt.timer(s.remainingMs))
-                .addAction(0, "Продолжить", actionPi(ctx, ActionReceiver.ACTION_RESUME, 2))
+        when {
+            s.overtime -> {
+                // прямой отсчёт от момента окончания фазы
+                b.setUsesChronometer(true)
+                    .setChronometerCountDown(false)
+                    .setWhen(s.endAt)
+                    .setShowWhen(true)
+                    .setContentText(
+                        if (s.phase == Phase.WORK) "Время сверх таймера засчитывается"
+                        else "Пора возвращаться к работе"
+                    )
+                    .addAction(
+                        0, if (s.phase == Phase.WORK) "Перерыв" else "Работать",
+                        actionPi(ctx, ActionReceiver.ACTION_START_NEXT, 6)
+                    )
+            }
+            s.running -> {
+                b.setUsesChronometer(true)
+                    .setChronometerCountDown(true)
+                    .setWhen(s.endAt)
+                    .setShowWhen(true)
+                    .setContentText("до " + Fmt.clock(s.endAt))
+                    .addAction(0, "Пауза", actionPi(ctx, ActionReceiver.ACTION_PAUSE, 1))
+                    .addAction(0, "Пропустить", actionPi(ctx, ActionReceiver.ACTION_SKIP, 3))
+            }
+            else -> {
+                b.setShowWhen(false)
+                    .setContentText("Пауза · осталось " + Fmt.timer(s.remainingMs))
+                    .addAction(0, "Продолжить", actionPi(ctx, ActionReceiver.ACTION_RESUME, 2))
+                    .addAction(0, "Пропустить", actionPi(ctx, ActionReceiver.ACTION_SKIP, 3))
+            }
         }
-        b.addAction(0, "Пропустить", actionPi(ctx, ActionReceiver.ACTION_SKIP, 3))
         b.addAction(0, "Стоп", actionPi(ctx, ActionReceiver.ACTION_STOP, 4))
 
         try {
@@ -103,6 +128,7 @@ object Notif {
             .setSmallIcon(R.drawable.ic_stat_timer)
             .setContentTitle(title)
             .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setAutoCancel(true)

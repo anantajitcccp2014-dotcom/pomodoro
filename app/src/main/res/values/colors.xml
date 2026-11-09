@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="tomato">#E04F3A</color>
-    <color name="leaf">#2E9E5B</color>
-    <color name="icon_bg">#FFF3E0</color>
+    <!-- работа — светло-синий, перерыв — бирюзовый -->
+    <color name="work">#1A88B0</color>
+    <color name="rest">#169A8E</color>
+    <color name="on_phase">#FFFFFF</color>
+    <color name="chart_text">#5A666C</color>
+    <color name="chart_grid">#DCE6EB</color>
+    <color name="icon_bg">#E3F4F8</color>
 </resources>

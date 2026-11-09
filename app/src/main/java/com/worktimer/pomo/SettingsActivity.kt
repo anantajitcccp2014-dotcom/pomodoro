@@ -62,6 +62,8 @@ class SettingsActivity : AppCompatActivity() {
         val autoWork = findViewById<CompoundButton>(R.id.autoWorkSwitch)
         val keepScreen = findViewById<CompoundButton>(R.id.keepScreenSwitch)
         alarmVolume = findViewById(R.id.alarmVolumeSwitch)
+        val dailyGoal = findViewById<EditText>(R.id.dailyGoalEdit)
+        val bigGoal = findViewById<EditText>(R.id.bigGoalEdit)
 
         fun fill(w: Int, s: Int, l: Int) {
             work.setText(w.toString())
@@ -75,6 +77,9 @@ class SettingsActivity : AppCompatActivity() {
         autoWork.isChecked = Config.autoWork(this)
         keepScreen.isChecked = Config.keepScreen(this)
         alarmVolume.isChecked = Config.alarmVolume(this)
+        val dg = Config.dailyGoalMin(this)
+        dailyGoal.setText(if (dg % 60 == 0) (dg / 60).toString() else String.format(java.util.Locale.ROOT, "%.1f", dg / 60.0))
+        bigGoal.setText(Config.bigGoalHours(this).toString())
 
         findViewById<MaterialButton>(R.id.preset25).setOnClickListener { fill(25, 5, 15) }
         findViewById<MaterialButton>(R.id.preset50).setOnClickListener { fill(50, 10, 20) }
@@ -101,6 +106,10 @@ class SettingsActivity : AppCompatActivity() {
                 autoWork = autoWork.isChecked,
                 keepScreen = keepScreen.isChecked,
                 alarmVolume = alarmVolume.isChecked,
+                dailyGoalMin = dailyGoal.text.toString().trim().replace(',', '.').toDoubleOrNull()
+                    ?.let { (it * 60).toInt().coerceIn(0, 24 * 60) } ?: Config.dailyGoalMin(this),
+                bigGoalHours = bigGoal.text.toString().trim().toIntOrNull()?.coerceIn(0, 100_000)
+                    ?: Config.bigGoalHours(this),
             )
             Toast.makeText(this, "Сохранено", Toast.LENGTH_SHORT).show()
             finish()

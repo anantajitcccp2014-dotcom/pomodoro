@@ -133,21 +133,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Перерыв начинается сам после работы" />
+            android:text="Сразу начинать перерыв, без доработки" />
 
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/autoWorkSwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Работа начинается сама после перерыва" />
+            android:text="Сразу начинать работу после перерыва" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:alpha="0.65"
-            android:text="Если выключено — придёт напоминание с кнопкой «Начать», и время не будет считаться, пока ты не вернёшься."
+            android:text="Выключено — когда таймер закончится, отсчёт пойдёт дальше («+05:12»). После работы это время засчитывается, можно спокойно доделать. Следующую фазу начинаешь кнопкой. Если забыть, отсчёт остановится сам через час."
             android:textSize="13sp" />
 
         <com.google.android.material.materialswitch.MaterialSwitch
@@ -163,6 +163,41 @@
             android:alpha="0.65"
             android:text="Работает, пока приложение открыто на экране. На паузе и после остановки экран гаснет как обычно."
             android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Цели"
+            android:textStyle="bold" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Цель на день, часов (0 — без цели)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/dailyGoalEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Большая цель, часов (0 — без цели)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/bigGoalEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:layout_width="match_parent"

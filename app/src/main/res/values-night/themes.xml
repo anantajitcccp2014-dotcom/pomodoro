@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Тёмная схема: светло-синий + бирюзовый -->
+    <style name="Theme.Pomo" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#7DD0EE</item>
+        <item name="colorOnPrimary">#00303D</item>
+        <item name="colorPrimaryContainer">#004D63</item>
+        <item name="colorOnPrimaryContainer">#C4E9F7</item>
+        <item name="colorPrimaryInverse">#1A88B0</item>
+
+        <item name="colorSecondary">#6FD6C8</item>
+        <item name="colorOnSecondary">#003731</item>
+        <item name="colorSecondaryContainer">#0B4E56</item>
+        <item name="colorOnSecondaryContainer">#CDEFF4</item>
+
+        <item name="colorTertiary">#A7C8F0</item>
+        <item name="colorOnTertiary">#0E2F52</item>
+        <item name="colorTertiaryContainer">#27466B</item>
+        <item name="colorOnTertiaryContainer">#D6E6FA</item>
+
+        <item name="android:colorBackground">#0F1416</item>
+        <item name="colorOnBackground">#DEE4E7</item>
+        <item name="colorSurface">#0F1416</item>
+        <item name="colorOnSurface">#DEE4E7</item>
+        <item name="colorSurfaceVariant">#3E4A50</item>
+        <item name="colorOnSurfaceVariant">#BCCAD0</item>
+        <item name="colorSurfaceInverse">#DEE4E7</item>
+        <item name="colorOnSurfaceInverse">#2A3134</item>
+        <item name="colorSurfaceContainerLowest">#0A0F11</item>
+        <item name="colorSurfaceContainerLow">#161D20</item>
+        <item name="colorSurfaceContainer">#1A2225</item>
+        <item name="colorSurfaceContainerHigh">#242C30</item>
+        <item name="colorSurfaceContainerHighest">#2F373B</item>
+        <item name="colorSurfaceDim">#0F1416</item>
+        <item name="colorSurfaceBright">#343B3F</item>
+        <item name="colorOutline">#87959B</item>
+        <item name="colorOutlineVariant">#3E4A50</item>
+
+        <item name="android:statusBarColor">#0F1416</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">#0F1416</item>
+    </style>
+</resources>
