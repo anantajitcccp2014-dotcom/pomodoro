@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.WindowManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -32,6 +33,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     private lateinit var weekText: TextView
     private lateinit var daysText: TextView
 
+    private var keepingScreen = false
     private val ru: Locale = Locale.forLanguageTag("ru")
     private val dayFmt: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM")
     private val handler = Handler(Looper.getMainLooper())
@@ -138,6 +140,14 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         mainButton.backgroundTintList = ColorStateList.valueOf(color)
         skipButton.isEnabled = s.phase != Phase.IDLE
         stopButton.isEnabled = s.phase != Phase.IDLE || s.cycle > 0
+
+        // Не гасить экран, пока таймер идёт и приложение открыто.
+        val keep = s.running && Config.keepScreen(this)
+        if (keep != keepingScreen) {
+            if (keep) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            else window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            keepingScreen = keep
+        }
 
         renderStats(s, now)
     }

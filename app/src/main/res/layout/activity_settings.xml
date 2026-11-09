@@ -150,6 +150,127 @@
             android:text="Если выключено — придёт напоминание с кнопкой «Начать», и время не будет считаться, пока ты не вернёшься."
             android:textSize="13sp" />
 
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/keepScreenSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Не гасить экран, пока идёт таймер" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alpha="0.65"
+            android:text="Работает, пока приложение открыто на экране. На паузе и после остановки экран гаснет как обычно."
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Звуки"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Конец работы (пора отдыхать)"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/workSoundName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.65"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/workSoundPlay"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="48dp"
+                android:text="▶" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/workSoundChange"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Сменить" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Конец перерыва (пора работать)"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/breakSoundName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.65"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/breakSoundPlay"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="48dp"
+                android:text="▶" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/breakSoundChange"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Сменить" />
+        </LinearLayout>
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/alarmVolumeSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Громкость будильника" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alpha="0.65"
+            android:text="Включено — звук слышно и в беззвучном режиме, громкость как у будильника. Выключено — громкость уведомлений."
+            android:textSize="13sp" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/saveButton"
             android:layout_width="match_parent"
@@ -161,7 +282,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            android:text="Звук и надёжность"
+            android:text="Надёжность"
             android:textStyle="bold" />
 
         <TextView
@@ -169,7 +290,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:alpha="0.65"
-            android:text="Мелодию напоминания можно сменить в настройках уведомлений (канал «Напоминания»). Если напоминания опаздывают, в сведениях о приложении сними ограничения батареи."
+            android:text="Если напоминания опаздывают, в сведениях о приложении сними ограничения батареи. Вибрацию напоминаний можно настроить в настройках уведомлений."
             android:textSize="13sp" />
 
         <com.google.android.material.button.MaterialButton

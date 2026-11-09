@@ -30,10 +30,34 @@ object Config {
     fun cycles(c: Context) = p(c).getInt("cycles", 4).coerceAtLeast(1)
     fun autoBreak(c: Context) = p(c).getBoolean("autoBreak", true)
     fun autoWork(c: Context) = p(c).getBoolean("autoWork", false)
+    fun keepScreen(c: Context) = p(c).getBoolean("keepScreen", true)
+    fun alarmVolume(c: Context) = p(c).getBoolean("alarmVolume", true)
+
+    /** key: "work" — звук конца работы, "break" — звук конца перерыва. */
+    fun sound(c: Context, key: String): String =
+        p(c).getString("sound_$key", null)
+            ?: if (key == "work") Sound.DEFAULT_WORK_END else Sound.DEFAULT_BREAK_END
+
+    fun soundName(c: Context, key: String): String {
+        val spec = sound(c, key)
+        if (spec == "none") return "Без звука"
+        if (spec.startsWith("raw:")) {
+            val id = spec.removePrefix("raw:")
+            return Sound.BUILTIN.firstOrNull { it.id == id }?.title ?: "Встроенный звук"
+        }
+        return p(c).getString("soundName_$key", null) ?: "Свой звук"
+    }
+
+    fun setSound(c: Context, key: String, spec: String, name: String?) {
+        p(c).edit()
+            .putString("sound_$key", spec)
+            .putString("soundName_$key", name)
+            .apply()
+    }
 
     fun save(
         c: Context, work: Int, short: Int, long: Int, cycles: Int,
-        autoBreak: Boolean, autoWork: Boolean,
+        autoBreak: Boolean, autoWork: Boolean, keepScreen: Boolean, alarmVolume: Boolean,
     ) {
         p(c).edit()
             .putInt("work", work)
@@ -42,6 +66,8 @@ object Config {
             .putInt("cycles", cycles)
             .putBoolean("autoBreak", autoBreak)
             .putBoolean("autoWork", autoWork)
+            .putBoolean("keepScreen", keepScreen)
+            .putBoolean("alarmVolume", alarmVolume)
             .apply()
     }
 }
@@ -118,7 +144,17 @@ object Alarms {
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        Engine.onAlarm(context)
+        val ended = Engine.onAlarm(context) ?: return
+        val key = if (ended == Phase.WORK) "work" else "break"
+        val spec = Config.sound(context, key)
+        if (spec == "none") return
+        // goAsync держит телефон «проснувшимся», пока играет звук.
+        val pending = goAsync()
+        val started = Sound.play(context, spec) { pending.finish() } ||
+            Sound.play(context, if (key == "work") Sound.DEFAULT_WORK_END else Sound.DEFAULT_BREAK_END) {
+                pending.finish()
+            }
+        if (!started) pending.finish()
     }
 }
 

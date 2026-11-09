@@ -122,12 +122,17 @@ object Engine {
 
     // ---------- события системы ----------
 
-    fun onAlarm(ctx: Context) {
+    /** Возвращает фазу, которая только что закончилась (или null, если ничего не закончилось). */
+    fun onAlarm(ctx: Context): Phase? {
         val s = load(ctx)
-        if (!s.running || s.phase == Phase.IDLE) return
+        if (!s.running || s.phase == Phase.IDLE) return null
         val now = System.currentTimeMillis()
-        if (now >= s.endAt - 3_000) finish(ctx, s, now, natural = true)
-        else apply(ctx, s) // сработало слишком рано — переставить
+        if (now >= s.endAt - 3_000) {
+            finish(ctx, s, now, natural = true)
+            return s.phase
+        }
+        apply(ctx, s) // сработало слишком рано — переставить
+        return null
     }
 
     /** После перезагрузки, обновления или открытия приложения: восстановить будильник. */

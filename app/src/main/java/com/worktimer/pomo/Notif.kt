@@ -14,12 +14,13 @@ import androidx.core.content.ContextCompat
 
 object Notif {
     private const val CH_TIMER = "timer"
-    private const val CH_ALERT = "alert"
+    private const val CH_ALERT = "alert_v2"
     private const val ID_ONGOING = 1
     private const val ID_ALERT = 2
 
     fun init(ctx: Context) {
         val nm = ctx.getSystemService(NotificationManager::class.java) ?: return
+        nm.deleteNotificationChannel("alert") // старый канал со стандартным звуком
         nm.createNotificationChannel(
             NotificationChannel(CH_TIMER, "Идёт таймер", NotificationManager.IMPORTANCE_LOW).apply {
                 description = "Обратный отсчёт в шторке"
@@ -28,7 +29,8 @@ object Notif {
         )
         nm.createNotificationChannel(
             NotificationChannel(CH_ALERT, "Напоминания", NotificationManager.IMPORTANCE_HIGH).apply {
-                description = "Пора на перерыв / пора за работу"
+                description = "Пора на перерыв / пора за работу. Звук задаётся в настройках приложения."
+                setSound(null, null) // звук играет само приложение
                 enableVibration(true)
                 vibrationPattern = longArrayOf(0, 400, 200, 400, 200, 400)
             }
@@ -103,7 +105,6 @@ object Notif {
             .setContentText(text)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
-            .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setAutoCancel(true)
             .setContentIntent(openPi(ctx))
         if (startLabel != null) {
