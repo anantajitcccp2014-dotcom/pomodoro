@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     private var workData: Map<LocalDate, Map<String, Long>> = emptyMap()
     private var pomoData: Map<LocalDate, Map<String, Int>> = emptyMap()
     private var keepingScreen = false
+    private var idlePhrase = Phrases.start()
     private val ru: Locale = Locale.forLanguageTag("ru")
 
     private val handler = Handler(Looper.getMainLooper())
@@ -108,6 +109,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
     override fun onResume() {
         super.onResume()
         Engine.restore(this)
+        idlePhrase = Phrases.start()
         refreshData()
         Engine.prefs(this).registerOnSharedPreferenceChangeListener(this)
         handler.post(ticker)
@@ -169,7 +171,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             s.phase == Phase.IDLE && s.nextPhase.isBreak ->
                 "Пора на перерыв.\n" + s.tip.ifEmpty { Phrases.breakTip(s.nextPhase) }
             s.phase == Phase.IDLE && s.cycle > 0 -> s.tip.ifEmpty { "Пора за работу." }
-            s.phase == Phase.IDLE -> "Начни хотя бы с одного захода — дальше пойдёт легче."
+            s.phase == Phase.IDLE -> idlePhrase
             s.overtime && s.phase == Phase.WORK ->
                 "Можно доделать — это время засчитывается.\nНа перерыве: " + s.tip
             s.overtime -> s.tip
@@ -237,7 +239,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         val projects = Projects.all(this)
         val todayProject = (workData[today]?.get(currentId) ?: 0L) + (live[today] ?: 0L)
         todayDetails.text = buildString {
-            append("помидоров: $pomos")
+            append("гхатик: $pomos")
             if (projects.size > 1) append(" · «${Projects.current(this@MainActivity).name}»: ${Fmt.duration(todayProject)}")
         }
 

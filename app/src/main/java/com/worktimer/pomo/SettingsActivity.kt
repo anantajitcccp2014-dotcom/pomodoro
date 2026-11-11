@@ -81,6 +81,8 @@ class SettingsActivity : AppCompatActivity() {
         dailyGoal.setText(if (dg % 60 == 0) (dg / 60).toString() else String.format(java.util.Locale.ROOT, "%.1f", dg / 60.0))
         bigGoal.setText(Config.bigGoalHours(this).toString())
 
+        findViewById<MaterialButton>(R.id.presetGhatika).setOnClickListener { fill(24, 6, 24) }
+        findViewById<MaterialButton>(R.id.presetMuhurta).setOnClickListener { fill(48, 12, 24) }
         findViewById<MaterialButton>(R.id.preset25).setOnClickListener { fill(25, 5, 15) }
         findViewById<MaterialButton>(R.id.preset50).setOnClickListener { fill(50, 10, 20) }
         findViewById<MaterialButton>(R.id.preset90).setOnClickListener { fill(90, 15, 30) }

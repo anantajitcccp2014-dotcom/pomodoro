@@ -106,7 +106,7 @@ object Engine {
         val tip = when {
             next.isBreak && s.overtime && s.tip.isNotEmpty() -> s.tip
             next.isBreak -> Phrases.breakTip(next)
-            else -> Phrases.focus()
+            else -> Phrases.start()
         }
         begin(ctx, next, s.cycle, now, tip)
     }
@@ -256,7 +256,7 @@ object Engine {
             if (natural) {
                 Notif.alert(ctx, "Перерыв окончен", phrase, if (auto) null else "Начать работу")
             }
-            if (auto) begin(ctx, Phase.WORK, s.cycle, now, Phrases.focus())
+            if (auto) begin(ctx, Phase.WORK, s.cycle, now, Phrases.start())
             else apply(ctx, s.copy(overtime = true, nextPhase = Phase.WORK, tip = phrase))
         }
     }

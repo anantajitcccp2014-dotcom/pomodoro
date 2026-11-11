@@ -44,6 +44,37 @@
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/presetGhatika"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:text="Гхатика 24 / 6" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/presetMuhurta"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:text="Мухурта 48 / 12" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alpha="0.65"
+            android:text="Гхатика — древнеиндийская мера времени, 24 минуты. Мухурта — две гхатики, 48 минут."
+            android:textSize="13sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/preset25"
                 style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="0dp"

@@ -27,17 +27,21 @@ jobs:
         run: gradle assembleRelease --no-daemon --stacktrace
 
       - name: Rename APK
-        run: cp app/build/outputs/apk/release/app-release.apk Pomodoro.apk
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk Ghatika.apk
+          cp Ghatika.apk Pomodoro.apk
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Pomodoro
-          path: Pomodoro.apk
+          name: Ghatika
+          path: Ghatika.apk
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
-          name: Помодоро, сборка ${{ github.run_number }}
+          name: Гхатика, сборка ${{ github.run_number }}
           make_latest: true
-          files: Pomodoro.apk
+          files: |
+            Ghatika.apk
+            Pomodoro.apk

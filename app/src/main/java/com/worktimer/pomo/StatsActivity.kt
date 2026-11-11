@@ -150,7 +150,7 @@ class StatsActivity : AppCompatActivity() {
         }
         summaryText.text = buildString {
             append("$currentName: ${Fmt.duration(current)}")
-            append("\nЗа $span: ${Fmt.duration(total)} · помидоров: $pomoCount")
+            append("\nЗа $span: ${Fmt.duration(total)} · гхатик: $pomoCount")
             if (active > 0) append("\nВ среднем ${Fmt.duration(total / active)} $unit с работой")
         }
 
@@ -179,6 +179,6 @@ class StatsActivity : AppCompatActivity() {
         var allPomo = 0
         work.values.forEach { m -> m.forEach { (p, ms) -> if (inFilter(p)) all += ms } }
         pomos.values.forEach { m -> m.forEach { (p, n) -> if (inFilter(p)) allPomo += n } }
-        totalText.text = "За всё время: ${Fmt.duration(all)} (${Fmt.hours(all)} ч) · помидоров: $allPomo"
+        totalText.text = "За всё время: ${Fmt.duration(all)} (${Fmt.hours(all)} ч) · гхатик: $allPomo"
     }
 }
