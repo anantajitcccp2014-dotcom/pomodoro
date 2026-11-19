@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.google.android.material.snackbar.Snackbar
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.util.Locale
@@ -94,6 +95,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         findViewById<MaterialButton>(R.id.settingsButton).setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
+        findViewById<MaterialButton>(R.id.addTimeButton).setOnClickListener { addTimeDialog() }
         findViewById<MaterialButton>(R.id.statsButton).setOnClickListener {
             startActivity(Intent(this, StatsActivity::class.java))
         }
@@ -328,6 +330,66 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                 render()
             }
             .setNegativeButton("Отмена", null)
+            .show()
+    }
+
+    // ---------------- ручное добавление времени ----------------
+
+    private fun addTimeDialog() {
+        val view = layoutInflater.inflate(R.layout.dialog_add_time, null)
+        val edit = view.findViewById<EditText>(R.id.minutesEdit)
+        val projectBtn = view.findViewById<MaterialButton>(R.id.addProjectButton)
+        var project = Projects.currentId(this)
+
+        fun bump(n: Int) {
+            val cur = edit.text.toString().trim().toIntOrNull() ?: 0
+            edit.setText((cur + n).coerceAtMost(24 * 60).toString())
+            edit.setSelection(edit.text.length)
+        }
+        view.findViewById<MaterialButton>(R.id.plus5).setOnClickListener { bump(5) }
+        view.findViewById<MaterialButton>(R.id.plus10).setOnClickListener { bump(10) }
+
+        fun showProject() {
+            val pr = Projects.all(this).firstOrNull { it.id == project } ?: Projects.current(this)
+            val text = SpannableString("●  Проект: ${pr.name}  ▾")
+            text.setSpan(ForegroundColorSpan(Projects.colorOf(pr)), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            projectBtn.text = text
+        }
+        showProject()
+        projectBtn.setOnClickListener {
+            val list = Projects.all(this)
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Проект")
+                .setItems(list.map { it.name }.toTypedArray()) { _, i ->
+                    project = list[i].id
+                    showProject()
+                }
+                .show()
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Добавить время за сегодня")
+            .setView(view)
+            .setPositiveButton("Добавить") { _, _ ->
+                val min = edit.text.toString().trim().toIntOrNull() ?: 0
+                if (min > 0) addManual(project, min)
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
+    }
+
+    private fun addManual(project: String, minutes: Int) {
+        val day = LocalDate.now()
+        val ms = minutes * 60_000L
+        Stats.addManual(this, day, project, ms)
+        refreshData()
+        render()
+        Snackbar.make(findViewById(android.R.id.content), "Добавлено ${Fmt.duration(ms)}", Snackbar.LENGTH_LONG)
+            .setAction("Отменить") {
+                Stats.addManual(this, day, project, -ms)
+                refreshData()
+                render()
+            }
             .show()
     }
 

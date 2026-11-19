@@ -32,6 +32,10 @@ object Config {
     fun autoWork(c: Context) = p(c).getBoolean("autoWork", false)
     fun keepScreen(c: Context) = p(c).getBoolean("keepScreen", true)
     fun alarmVolume(c: Context) = p(c).getBoolean("alarmVolume", true)
+    /** Тихий восходящий перелив за минуту до конца перерыва. */
+    fun softBeforeWork(c: Context) = p(c).getBoolean("softBeforeWork", true)
+    /** Тихий нисходящий перелив через 5 минут доработки. */
+    fun softOvertime(c: Context) = p(c).getBoolean("softOvertime", true)
     /** Дневная цель в минутах (0 — без цели). */
     fun dailyGoalMin(c: Context) = p(c).getInt("dailyGoal", 240)
     /** Большая цель в часах (0 — без цели). */
@@ -62,7 +66,7 @@ object Config {
     fun save(
         c: Context, work: Int, short: Int, long: Int, cycles: Int,
         autoBreak: Boolean, autoWork: Boolean, keepScreen: Boolean, alarmVolume: Boolean,
-        dailyGoalMin: Int, bigGoalHours: Int,
+        dailyGoalMin: Int, bigGoalHours: Int, softBeforeWork: Boolean, softOvertime: Boolean,
     ) {
         p(c).edit()
             .putInt("work", work)
@@ -75,6 +79,8 @@ object Config {
             .putBoolean("autoWork", autoWork)
             .putBoolean("keepScreen", keepScreen)
             .putBoolean("alarmVolume", alarmVolume)
+            .putBoolean("softBeforeWork", softBeforeWork)
+            .putBoolean("softOvertime", softOvertime)
             .apply()
     }
 }
@@ -115,6 +121,13 @@ object Stats {
             e.putLong(k, prefs.getLong(k, 0L) + ms)
         }
         e.commit()
+    }
+
+    /** Добавленное вручную время (delta может быть отрицательной — для отмены). */
+    fun addManual(c: Context, day: LocalDate, project: String, delta: Long) {
+        val k = key("w", day, project)
+        val prefs = p(c)
+        prefs.edit().putLong(k, (prefs.getLong(k, 0L) + delta).coerceAtLeast(0L)).commit()
     }
 
     fun addPomodoro(c: Context, at: Long, project: String) {
@@ -183,6 +196,39 @@ object Alarms {
 
     fun cancel(ctx: Context) {
         ctx.getSystemService(AlarmManager::class.java)?.cancel(pending(ctx))
+    }
+
+    // ----- тихие переливы (отдельный будильник) -----
+
+    private fun softPending(ctx: Context): PendingIntent = PendingIntent.getBroadcast(
+        ctx, 101, Intent(ctx, SoftAlarmReceiver::class.java),
+        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+    )
+
+    fun scheduleSoft(ctx: Context, at: Long) {
+        val am = ctx.getSystemService(AlarmManager::class.java) ?: return
+        val pi = softPending(ctx)
+        val canExact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || am.canScheduleExactAlarms()
+        try {
+            if (canExact) am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi)
+            else am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi)
+        } catch (e: SecurityException) {
+            am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi)
+        }
+    }
+
+    fun cancelSoft(ctx: Context) {
+        ctx.getSystemService(AlarmManager::class.java)?.cancel(softPending(ctx))
+    }
+}
+
+/** Тихий перелив: «скоро за работу» или «пора закругляться». */
+class SoftAlarmReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        val spec = Engine.softSoundNow(context) ?: return
+        val pending = goAsync()
+        // если в этот момент уже играет основной звук — не перебиваем его
+        if (Sound.isPlaying || !Sound.play(context, spec) { pending.finish() }) pending.finish()
     }
 }
 

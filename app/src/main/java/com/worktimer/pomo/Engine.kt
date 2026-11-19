@@ -268,6 +268,33 @@ object Engine {
             s.overtime -> Alarms.schedule(ctx, s.endAt + OVERTIME_CAP_MS)
             else -> Alarms.schedule(ctx, s.endAt)
         }
+        val soft = softTime(ctx, s)
+        if (soft != null && soft > System.currentTimeMillis()) Alarms.scheduleSoft(ctx, soft)
+        else Alarms.cancelSoft(ctx)
         Notif.updateOngoing(ctx, s)
+    }
+
+    // ---------- тихие переливы ----------
+
+    const val SOFT_BEFORE_MS = 60_000L        // за минуту до конца перерыва
+    const val SOFT_OVERTIME_MS = 5 * 60_000L  // через 5 минут доработки
+
+    /** Когда должен прозвучать тихий перелив в текущем состоянии (или null). */
+    private fun softTime(ctx: Context, s: TimerState): Long? = when {
+        !s.running -> null
+        s.phase.isBreak && !s.overtime && Config.softBeforeWork(ctx) &&
+            durationMs(ctx, s.phase) >= 2 * 60_000L -> s.endAt - SOFT_BEFORE_MS
+        s.phase == Phase.WORK && s.overtime && Config.softOvertime(ctx) -> s.endAt + SOFT_OVERTIME_MS
+        else -> null
+    }
+
+    /** Какой перелив играть прямо сейчас (null — если момент уже не тот). */
+    fun softSoundNow(ctx: Context): String? {
+        val s = load(ctx)
+        val at = softTime(ctx, s) ?: return null
+        val now = System.currentTimeMillis()
+        // допускаем небольшое опоздание будильника, но не после конца фазы
+        if (now < at - 5_000L || now > at + 50_000L) return null
+        return if (s.phase.isBreak) Sound.SOFT_BEFORE_WORK else Sound.SOFT_OVERTIME
     }
 }

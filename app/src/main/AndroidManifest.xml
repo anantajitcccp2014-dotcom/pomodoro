@@ -40,6 +40,10 @@
             android:exported="false" />
 
         <receiver
+            android:name=".SoftAlarmReceiver"
+            android:exported="false" />
+
+        <receiver
             android:name=".ActionReceiver"
             android:exported="false" />
 

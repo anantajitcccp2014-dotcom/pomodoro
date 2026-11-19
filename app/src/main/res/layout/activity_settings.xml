@@ -44,64 +44,46 @@
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/presetHalf"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="3dp"
+                android:layout_weight="1"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="Пол-гхатики\n12 / 3" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/presetGhatika"
                 style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
                 android:layout_weight="1"
-                android:text="Гхатика 24 / 6" />
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="Гхатика\n24 / 6" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/presetMuhurta"
                 style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="3dp"
                 android:layout_weight="1"
-                android:text="Мухурта 48 / 12" />
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="Мухурта\n48 / 12" />
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:alpha="0.65"
-            android:text="Гхатика — древнеиндийская мера времени, 24 минуты. Мухурта — две гхатики, 48 минут."
+            android:text="Гхатика — древнеиндийская мера времени, 24 минуты; мухурта — две гхатики. Пол-гхатики — для дней, когда трудно начать. Длинный перерыв: после 4 пол-гхатик (12 мин), после 4 гхатик (24 мин), после 2 мухурт (24 мин)."
             android:textSize="13sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/preset25"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:layout_weight="1"
-                android:text="25 / 5" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/preset50"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
-                android:layout_weight="1"
-                android:text="50 / 10" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/preset90"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_weight="1"
-                android:text="90 / 15" />
-        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -336,6 +318,19 @@
             android:alpha="0.65"
             android:text="Включено — звук слышно и в беззвучном режиме, громкость как у будильника. Выключено — громкость уведомлений."
             android:textSize="13sp" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/softBeforeSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Тихий переливчик за минуту до конца перерыва" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/softOvertimeSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Тихий переливчик через 5 минут доработки" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/saveButton"

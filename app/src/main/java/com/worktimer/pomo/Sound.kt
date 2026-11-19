@@ -25,7 +25,13 @@ object Sound {
         Builtin("trill", "Трель", R.raw.trill),
         Builtin("gong", "Гонг", R.raw.gong),
         Builtin("wood", "Деревянные щелчки", R.raw.wood),
+        Builtin("invite", "Переливчик вверх", R.raw.invite),
+        Builtin("winddown", "Переливчик вниз", R.raw.winddown),
     )
+
+    /** Тихие переливы: за минуту до конца перерыва и через 5 минут доработки. */
+    const val SOFT_BEFORE_WORK = "raw:invite"
+    const val SOFT_OVERTIME = "raw:winddown"
 
     const val DEFAULT_WORK_END = "raw:bowl"
     const val DEFAULT_BREAK_END = "raw:chime"

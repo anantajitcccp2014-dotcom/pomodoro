@@ -62,6 +62,8 @@ class SettingsActivity : AppCompatActivity() {
         val autoWork = findViewById<CompoundButton>(R.id.autoWorkSwitch)
         val keepScreen = findViewById<CompoundButton>(R.id.keepScreenSwitch)
         alarmVolume = findViewById(R.id.alarmVolumeSwitch)
+        val softBefore = findViewById<CompoundButton>(R.id.softBeforeSwitch)
+        val softOvertime = findViewById<CompoundButton>(R.id.softOvertimeSwitch)
         val dailyGoal = findViewById<EditText>(R.id.dailyGoalEdit)
         val bigGoal = findViewById<EditText>(R.id.bigGoalEdit)
 
@@ -77,15 +79,19 @@ class SettingsActivity : AppCompatActivity() {
         autoWork.isChecked = Config.autoWork(this)
         keepScreen.isChecked = Config.keepScreen(this)
         alarmVolume.isChecked = Config.alarmVolume(this)
+        softBefore.isChecked = Config.softBeforeWork(this)
+        softOvertime.isChecked = Config.softOvertime(this)
         val dg = Config.dailyGoalMin(this)
         dailyGoal.setText(if (dg % 60 == 0) (dg / 60).toString() else String.format(java.util.Locale.ROOT, "%.1f", dg / 60.0))
         bigGoal.setText(Config.bigGoalHours(this).toString())
 
-        findViewById<MaterialButton>(R.id.presetGhatika).setOnClickListener { fill(24, 6, 24) }
-        findViewById<MaterialButton>(R.id.presetMuhurta).setOnClickListener { fill(48, 12, 24) }
-        findViewById<MaterialButton>(R.id.preset25).setOnClickListener { fill(25, 5, 15) }
-        findViewById<MaterialButton>(R.id.preset50).setOnClickListener { fill(50, 10, 20) }
-        findViewById<MaterialButton>(R.id.preset90).setOnClickListener { fill(90, 15, 30) }
+        fun preset(w: Int, s: Int, l: Int, n: Int) {
+            fill(w, s, l)
+            cycles.setText(n.toString())
+        }
+        findViewById<MaterialButton>(R.id.presetHalf).setOnClickListener { preset(12, 3, 12, 4) }
+        findViewById<MaterialButton>(R.id.presetGhatika).setOnClickListener { preset(24, 6, 24, 4) }
+        findViewById<MaterialButton>(R.id.presetMuhurta).setOnClickListener { preset(48, 12, 24, 2) }
 
         // ----- звуки -----
         findViewById<MaterialButton>(R.id.workSoundPlay).setOnClickListener { preview("work") }
@@ -108,6 +114,8 @@ class SettingsActivity : AppCompatActivity() {
                 autoWork = autoWork.isChecked,
                 keepScreen = keepScreen.isChecked,
                 alarmVolume = alarmVolume.isChecked,
+                softBeforeWork = softBefore.isChecked,
+                softOvertime = softOvertime.isChecked,
                 dailyGoalMin = dailyGoal.text.toString().trim().replace(',', '.').toDoubleOrNull()
                     ?.let { (it * 60).toInt().coerceIn(0, 24 * 60) } ?: Config.dailyGoalMin(this),
                 bigGoalHours = bigGoal.text.toString().trim().toIntOrNull()?.coerceIn(0, 100_000)
